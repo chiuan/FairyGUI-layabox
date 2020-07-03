@@ -926,27 +926,34 @@ namespace fgui {
                 yv = Math.round(yv);
             }
 
+            if(this._displayObject)
             this._displayObject.pos(xv + this._pivotOffsetX, yv + this._pivotOffsetY);
         }
 
         protected handleSizeChanged(): void {
+            if(this._displayObject)
             this._displayObject.size(this._width, this._height);
         }
 
         protected handleScaleChanged(): void {
+            if(this._displayObject)
             this._displayObject.scale(this._scaleX, this._scaleY, true);
         }
 
         protected handleGrayedChanged(): void {
+            if(this._displayObject)
             ToolSet.setColorFilter(this._displayObject, this._grayed);
         }
 
         protected handleAlphaChanged(): void {
+            if(this._displayObject)
             this._displayObject.alpha = this._alpha;
         }
 
         public handleVisibleChanged(): void {
+            if(this._displayObject)
             this._displayObject.visible = this.internalVisible2;
+            if(this._displayObject)
             this._displayObject.event(Events.VISIBLE_CHANGED)
         }
 

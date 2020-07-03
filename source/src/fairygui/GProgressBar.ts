@@ -145,7 +145,13 @@ namespace fgui {
 
         private setFillAmount(bar: GObject, percent: number): boolean {
             if (((bar instanceof GImage) || (bar instanceof GLoader)) && bar.fillMethod != FillMethod.None) {
-                bar.fillAmount = percent;
+                var _v = Math.max(0.01,percent)
+                if(_v <= 0.01) {
+                    bar.visible = false
+                } else {
+                    bar.visible = true
+                    bar.fillAmount = percent;
+                }
                 return true;
             }
             else
