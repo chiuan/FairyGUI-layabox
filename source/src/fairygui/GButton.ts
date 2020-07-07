@@ -256,6 +256,7 @@ namespace fgui {
                 Laya.timer.once(200, this, this.setState, [GButton.UP], false);
             }
             this.__click(Events.createEvent(Laya.Event.CLICK, this.displayObject));
+            this.displayObject.event(Laya.Event.CLICK)
         }
 
         protected setState(val: string): void {
