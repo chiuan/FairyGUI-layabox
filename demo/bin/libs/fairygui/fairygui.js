@@ -1114,7 +1114,7 @@
             }
         }
         __rollOver(evt) {
-            Laya.timer.once(100, this, this.__doShowTooltips);
+            Laya.timer.once(1000, this, this.__doShowTooltips);
         }
         __doShowTooltips() {
             var r = this.root;
@@ -1449,23 +1449,30 @@
                 xv = Math.round(xv);
                 yv = Math.round(yv);
             }
-            this._displayObject.pos(xv + this._pivotOffsetX, yv + this._pivotOffsetY);
+            if (this._displayObject)
+                this._displayObject.pos(xv + this._pivotOffsetX, yv + this._pivotOffsetY);
         }
         handleSizeChanged() {
-            this._displayObject.size(this._width, this._height);
+            if (this._displayObject)
+                this._displayObject.size(this._width, this._height);
         }
         handleScaleChanged() {
-            this._displayObject.scale(this._scaleX, this._scaleY, true);
+            if (this._displayObject)
+                this._displayObject.scale(this._scaleX, this._scaleY, true);
         }
         handleGrayedChanged() {
-            fgui.ToolSet.setColorFilter(this._displayObject, this._grayed);
+            if (this._displayObject)
+                fgui.ToolSet.setColorFilter(this._displayObject, this._grayed);
         }
         handleAlphaChanged() {
-            this._displayObject.alpha = this._alpha;
+            if (this._displayObject)
+                this._displayObject.alpha = this._alpha;
         }
         handleVisibleChanged() {
-            this._displayObject.visible = this.internalVisible2;
-            this._displayObject.event(fgui.Events.VISIBLE_CHANGED);
+            if (this._displayObject)
+                this._displayObject.visible = this.internalVisible2;
+            if (this._displayObject)
+                this._displayObject.event(fgui.Events.VISIBLE_CHANGED);
         }
         getProp(index) {
             switch (index) {
@@ -3713,7 +3720,9 @@
                 Laya.timer.once(100, this, this.setState, [GButton.DOWN], false);
                 Laya.timer.once(200, this, this.setState, [GButton.UP], false);
             }
-            this.__click(fgui.Events.createEvent(Laya.Event.CLICK, this.displayObject));
+            // this.__click(Events.createEvent(Laya.Event.CLICK, this.displayObject));
+            if (this.displayObject)
+                this.displayObject.event(Laya.Event.CLICK);
         }
         setState(val) {
             if (this._buttonController)
@@ -7592,6 +7601,7 @@
                 this._errorSign.setSize(this.width, this.height);
                 this._displayObject.addChild(this._errorSign.displayObject);
             }
+            console.error("fgui.GLoader loadFailed : " + this.url);
         }
         clearErrorState() {
             if (this._errorSign) {
@@ -8339,7 +8349,14 @@
         }
         setFillAmount(bar, percent) {
             if (((bar instanceof fgui.GImage) || (bar instanceof fgui.GLoader)) && bar.fillMethod != fgui.FillMethod.None) {
-                bar.fillAmount = percent;
+                var _v = Math.max(0.01, percent);
+                if (_v <= 0.01) {
+                    bar.visible = false;
+                }
+                else {
+                    bar.visible = true;
+                    bar.fillAmount = percent;
+                }
                 return true;
             }
             else
@@ -8436,7 +8453,7 @@
                 }
             }
             catch (err) {
-                console.log("laya reports html error:" + err);
+                console.error("laya reports html error:" + err);
             }
         }
         get text() {
@@ -10934,7 +10951,8 @@
             this.setSize(this.owner.width, this.owner.height);
         }
         dispose() {
-            this.owner.displayObject.stage.offAllCaller(this);
+            if (this.owner != null && this.owner.displayObject != null && this.owner.displayObject.stage != null)
+                this.owner.displayObject.stage.offAllCaller(this);
             if (ScrollPane.draggingPane == this) {
                 ScrollPane.draggingPane = null;
             }
@@ -13669,6 +13687,7 @@
             this._dependencies = [];
             this._branches = [];
             this._branchIndex = -1;
+            this._unloadAssets = true;
         }
         static get branch() {
             return UIPackage._branch;
@@ -14057,8 +14076,13 @@
                     buffer.pos = nextPos;
                 }
             }
+            this._unloadAssets = false;
         }
         loadAllAssets() {
+            if (this._unloadAssets == false) {
+                console.warn("this package is not unloadAssets before:" + this._name);
+                return;
+            }
             var cnt = this._items.length;
             for (var i = 0; i < cnt; i++) {
                 var pi = this._items[i];
@@ -14066,6 +14090,7 @@
             }
         }
         unloadAssets() {
+            this._unloadAssets = true;
             var cnt = this._items.length;
             for (var i = 0; i < cnt; i++) {
                 var pi = this._items[i];
@@ -17029,17 +17054,22 @@
                     this._onStart.call(this._onStartCaller, this);
                 }
                 catch (err) {
-                    console.log("FairyGUI: error in start callback > " + err);
+                    console.error("FairyGUI: error in start callback > " + err);
                 }
             }
         }
         callUpdateCallback() {
             if (this._onUpdate != null) {
-                try {
-                    this._onUpdate.call(this._onUpdateCaller, this);
+                if (this.protectedTRY) {
+                    try {
+                        this._onUpdate.call(this._onUpdateCaller, this);
+                    }
+                    catch (err) {
+                        console.error("FairyGUI: error in update callback > " + err);
+                    }
                 }
-                catch (err) {
-                    console.log("FairyGUI: error in update callback > " + err);
+                else {
+                    this._onUpdate.call(this._onUpdateCaller, this);
                 }
             }
         }
@@ -17049,7 +17079,7 @@
                     this._onComplete.call(this._onCompleteCaller, this);
                 }
                 catch (err) {
-                    console.log("FairyGUI: error in complete callback > " + err);
+                    console.error("FairyGUI: error in complete callback > " + err);
                 }
             }
         }

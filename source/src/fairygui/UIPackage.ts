@@ -13,6 +13,7 @@ namespace fgui {
         private _dependencies: Array<PackageDependency>;
         private _branches: Array<string>;
         public _branchIndex: number;
+        public _unloadAssets: boolean;
 
         public static _constructing: number = 0;
 
@@ -29,6 +30,7 @@ namespace fgui {
             this._dependencies = [];
             this._branches = [];
             this._branchIndex = -1;
+            this._unloadAssets = true
         }
 
         public static get branch(): string {
@@ -481,9 +483,16 @@ namespace fgui {
                     buffer.pos = nextPos;
                 }
             }
+
+            this._unloadAssets = false
         }
 
         public loadAllAssets(): void {
+            if (this._unloadAssets == false) {
+                console.warn("this package is not unloadAssets before:" + this._name)
+                return
+            }
+
             var cnt: number = this._items.length;
             for (var i: number = 0; i < cnt; i++) {
                 var pi: PackageItem = this._items[i];
@@ -492,6 +501,7 @@ namespace fgui {
         }
 
         public unloadAssets(): void {
+            this._unloadAssets = true
             var cnt: number = this._items.length;
             for (var i: number = 0; i < cnt; i++) {
                 var pi: PackageItem = this._items[i];

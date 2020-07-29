@@ -198,8 +198,9 @@ namespace fgui {
         }
 
         public dispose(): void {
-            if(this.owner.displayObject.stage)
+            if(this.owner != null && this.owner.displayObject != null && this.owner.displayObject.stage != null)
                 this.owner.displayObject.stage.offAllCaller(this);
+
             if (ScrollPane.draggingPane == this) {
                 ScrollPane.draggingPane = null;
             }

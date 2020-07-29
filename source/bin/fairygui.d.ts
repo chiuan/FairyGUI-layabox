@@ -1813,6 +1813,7 @@ declare namespace fgui {
         private _dependencies;
         private _branches;
         _branchIndex: number;
+        _unloadAssets: boolean;
         static _constructing: number;
         private static _instById;
         private static _instByName;
@@ -2289,6 +2290,7 @@ declare namespace fgui {
         _propType: any;
         _killed: boolean;
         _paused: boolean;
+        protectedTRY: boolean;
         private _delay;
         private _duration;
         private _breakpoint;

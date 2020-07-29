@@ -4,6 +4,7 @@ namespace fgui {
         public _propType: any;
         public _killed: boolean;
         public _paused: boolean;
+        public protectedTRY : boolean;
 
         private _delay: number;
         private _duration: number;
@@ -476,18 +477,22 @@ namespace fgui {
                     this._onStart.call(this._onStartCaller, this);
                 }
                 catch (err) {
-                    console.log("FairyGUI: error in start callback > " + err);
+                    console.error("FairyGUI: error in start callback > " + err);
                 }
             }
         }
 
         private callUpdateCallback(): void {
             if (this._onUpdate != null) {
-                try {
+                if(this.protectedTRY) {
+                    try {
+                        this._onUpdate.call(this._onUpdateCaller, this);
+                    }
+                    catch (err) {
+                        console.error("FairyGUI: error in update callback > " + err);
+                    }
+                } else {
                     this._onUpdate.call(this._onUpdateCaller, this);
-                }
-                catch (err) {
-                    console.log("FairyGUI: error in update callback > " + err);
                 }
             }
         }
@@ -498,7 +503,7 @@ namespace fgui {
                     this._onComplete.call(this._onCompleteCaller, this);
                 }
                 catch (err) {
-                    console.log("FairyGUI: error in complete callback > " + err);
+                    console.error("FairyGUI: error in complete callback > " + err);
                 }
             }
         }

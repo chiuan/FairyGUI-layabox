@@ -766,10 +766,10 @@ namespace fgui {
 
             if (this._scrollPane)
                 this._scrollPane.onOwnerSizeChanged();
-            else if (this._displayObject.scrollRect)
+            else if (this._displayObject != null && this._displayObject.scrollRect)
                 this.updateMask();
 
-            if (this._displayObject.hitArea)
+            if (this._displayObject != null && this._displayObject.hitArea)
                 this.updateHitArea();
         }
 

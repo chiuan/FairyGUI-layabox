@@ -49,7 +49,7 @@ namespace fgui {
                 }
             }
             catch (err) {
-                console.log("laya reports html error:" + err);
+                console.error("laya reports html error:" + err);
             }
         }
 

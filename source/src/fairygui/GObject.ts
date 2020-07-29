@@ -510,7 +510,7 @@ namespace fgui {
         }
 
         private __rollOver(evt: Laya.Event): void {
-            Laya.timer.once(100, this, this.__doShowTooltips);
+            Laya.timer.once(1000, this, this.__doShowTooltips);
         }
 
         private __doShowTooltips(): void {
