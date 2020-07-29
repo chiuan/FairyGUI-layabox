@@ -198,9 +198,6 @@ namespace fgui {
         }
 
         public dispose(): void {
-            if(this.owner != null && this.owner.displayObject != null && this.owner.displayObject.stage != null)
-                this.owner.displayObject.stage.offAllCaller(this);
-
             if (ScrollPane.draggingPane == this) {
                 ScrollPane.draggingPane = null;
             }
@@ -1182,6 +1179,9 @@ namespace fgui {
         }
 
         private __mouseUp(): void {
+            if (this._owner.isDisposed)
+                return;
+
             this._owner.displayObject.stage.off(Laya.Event.MOUSE_MOVE, this, this.__mouseMove);
             this._owner.displayObject.stage.off(Laya.Event.MOUSE_UP, this, this.__mouseUp);
             this._owner.displayObject.stage.off(Laya.Event.CLICK, this, this.__click);
