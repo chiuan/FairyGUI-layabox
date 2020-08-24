@@ -230,7 +230,8 @@ namespace fgui {
                         this._group.setBoundsChangedFlag();
                 }
 
-                this.displayObject.event(Events.SIZE_CHANGED);
+                if(this.displayObject != null)
+                    this.displayObject.event(Events.SIZE_CHANGED);
             }
         }
 
