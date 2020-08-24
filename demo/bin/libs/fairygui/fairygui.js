@@ -885,7 +885,8 @@
                     if (this._group)
                         this._group.setBoundsChangedFlag();
                 }
-                this.displayObject.event(fgui.Events.SIZE_CHANGED);
+                if (this.displayObject != null)
+                    this.displayObject.event(fgui.Events.SIZE_CHANGED);
             }
         }
         ensureSizeCorrect() {
@@ -1678,6 +1679,10 @@
                 GObject.draggingObject = null;
                 this.reset();
                 fgui.Events.dispatch(fgui.Events.DRAG_END, this._displayObject, evt);
+            }
+            else if (this._dragTesting) {
+                this._dragTesting = false;
+                this.reset();
             }
         }
         //-------------------------------------------------------------------
@@ -3115,9 +3120,9 @@
             super.handleSizeChanged();
             if (this._scrollPane)
                 this._scrollPane.onOwnerSizeChanged();
-            else if (this._displayObject.scrollRect)
+            else if (this._displayObject != null && this._displayObject.scrollRect)
                 this.updateMask();
-            if (this._displayObject.hitArea)
+            if (this._displayObject != null && this._displayObject.hitArea)
                 this.updateHitArea();
         }
         handleGrayedChanged() {
@@ -7601,7 +7606,6 @@
                 this._errorSign.setSize(this.width, this.height);
                 this._displayObject.addChild(this._errorSign.displayObject);
             }
-            console.error("fgui.GLoader loadFailed : " + this.url);
         }
         clearErrorState() {
             if (this._errorSign) {
@@ -10951,8 +10955,6 @@
             this.setSize(this.owner.width, this.owner.height);
         }
         dispose() {
-            if (this.owner != null && this.owner.displayObject != null && this.owner.displayObject.stage != null)
-                this.owner.displayObject.stage.offAllCaller(this);
             if (ScrollPane.draggingPane == this) {
                 ScrollPane.draggingPane = null;
             }
@@ -11770,6 +11772,8 @@
             fgui.Events.dispatch(fgui.Events.SCROLL, this._owner.displayObject);
         }
         __mouseUp() {
+            if (this._owner.isDisposed)
+                return;
             this._owner.displayObject.stage.off(Laya.Event.MOUSE_MOVE, this, this.__mouseMove);
             this._owner.displayObject.stage.off(Laya.Event.MOUSE_UP, this, this.__mouseUp);
             this._owner.displayObject.stage.off(Laya.Event.CLICK, this, this.__click);
@@ -15910,7 +15914,7 @@
         updateState() {
             var gv = this._storage[this._controller.selectedPageId];
             if (!gv)
-                this._storage[this._controller.selectedPageId] = {};
+                this._storage[this._controller.selectedPageId] = gv = {};
             gv.width = this._owner.width;
             gv.height = this._owner.height;
             gv.scaleX = this._owner.scaleX;
