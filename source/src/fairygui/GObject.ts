@@ -501,12 +501,16 @@ namespace fgui {
             if (this._tooltips) {
                 this.off(Laya.Event.ROLL_OVER, this, this.__rollOver);
                 this.off(Laya.Event.ROLL_OUT, this, this.__rollOut);
+                this.off(Laya.Event.MOUSE_OUT, this, this.__rollOut);
+                this.off(Laya.Event.CLICK,this,this.__rollOut)
             }
 
             this._tooltips = value;
             if (this._tooltips) {
                 this.on(Laya.Event.ROLL_OVER, this, this.__rollOver);
                 this.on(Laya.Event.ROLL_OUT, this, this.__rollOut);
+                this.on(Laya.Event.MOUSE_OUT, this, this.__rollOut);
+                this.on(Laya.Event.CLICK,this,this.__rollOut)
             }
         }
 
