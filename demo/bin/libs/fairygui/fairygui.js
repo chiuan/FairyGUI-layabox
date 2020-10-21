@@ -14184,7 +14184,9 @@
                         var sprite = this._sprites[item.id];
                         if (sprite) {
                             var atlasTexture = (this.getItemAsset(sprite.atlas));
-                            item.texture = Laya.Texture.create(atlasTexture, sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height, sprite.offset.x, sprite.offset.y, sprite.originalSize.x, sprite.originalSize.y);
+                            if (atlasTexture) {
+                                item.texture = Laya.Texture.create(atlasTexture, sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height, sprite.offset.x, sprite.offset.y, sprite.originalSize.x, sprite.originalSize.y);
+                            }
                         }
                         else
                             item.texture = null;
@@ -14280,7 +14282,9 @@
                 spriteId = buffer.readS();
                 if (spriteId != null && (sprite = this._sprites[spriteId]) != null) {
                     var atlasTexture = (this.getItemAsset(sprite.atlas));
-                    frame.texture = Laya.Texture.create(atlasTexture, sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height, fx, fy, item.width, item.height);
+                    if (atlasTexture) {
+                        frame.texture = Laya.Texture.create(atlasTexture, sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height, fx, fy, item.width, item.height);
+                    }
                 }
                 item.frames[i] = frame;
                 buffer.pos = nextPos;
@@ -14328,8 +14332,10 @@
                 else if (bg.channel == 3)
                     bg.channel = 1;
                 if (font.ttf) {
-                    bg.texture = Laya.Texture.create(mainTexture, bx + mainSprite.rect.x, by + mainSprite.rect.y, bg.width, bg.height);
-                    bg.lineHeight = lineHeight;
+                    if (mainTexture) {
+                        bg.texture = Laya.Texture.create(mainTexture, bx + mainSprite.rect.x, by + mainSprite.rect.y, bg.width, bg.height);
+                        bg.lineHeight = lineHeight;
+                    }
                 }
                 else {
                     var charImg = this._itemsById[img];

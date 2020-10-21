@@ -595,10 +595,12 @@ namespace fgui {
                         var sprite: AtlasSprite = this._sprites[item.id];
                         if (sprite) {
                             var atlasTexture: Laya.Texture = <Laya.Texture>(this.getItemAsset(sprite.atlas));
-                            item.texture = Laya.Texture.create(atlasTexture,
-                                sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height,
-                                sprite.offset.x, sprite.offset.y,
-                                sprite.originalSize.x, sprite.originalSize.y);
+                            if(atlasTexture) {
+                                item.texture = Laya.Texture.create(atlasTexture,
+                                    sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height,
+                                    sprite.offset.x, sprite.offset.y,
+                                    sprite.originalSize.x, sprite.originalSize.y);
+                            }
                         }
                         else
                             item.texture = null;
@@ -713,9 +715,11 @@ namespace fgui {
 
                 if (spriteId != null && (sprite = this._sprites[spriteId]) != null) {
                     var atlasTexture: Laya.Texture = <Laya.Texture>(this.getItemAsset(sprite.atlas));
-                    frame.texture = Laya.Texture.create(atlasTexture,
-                        sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height,
-                        fx, fy, item.width, item.height);
+                    if(atlasTexture) {
+                        frame.texture = Laya.Texture.create(atlasTexture,
+                            sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height,
+                            fx, fy, item.width, item.height);
+                    }
                 }
                 item.frames[i] = frame;
 
@@ -773,10 +777,12 @@ namespace fgui {
                     bg.channel = 1;
 
                 if (font.ttf) {
-                    bg.texture = Laya.Texture.create(mainTexture,
-                        bx + mainSprite.rect.x, by + mainSprite.rect.y, bg.width, bg.height);
-
-                    bg.lineHeight = lineHeight;
+                    if(mainTexture) {
+                        bg.texture = Laya.Texture.create(mainTexture,
+                            bx + mainSprite.rect.x, by + mainSprite.rect.y, bg.width, bg.height);
+    
+                        bg.lineHeight = lineHeight;
+                    }
                 }
                 else {
                     var charImg: PackageItem = this._itemsById[img];
