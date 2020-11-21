@@ -41,6 +41,10 @@ namespace fgui {
             if (this._text == null)
                 this._text = "";
 
+            if(this._textField == null || this._textField.destroyed) {
+                return
+            }
+
             if (this._bitmapFont == null) {
                 if (this._widthAutoSize)
                     this._textField.width = 10000;

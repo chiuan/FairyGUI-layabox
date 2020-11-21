@@ -292,8 +292,13 @@ namespace fgui {
         }
 
         private __getResCompleted(tex: Laya.Texture): void {
-            if (tex != null)
-                this.onExternalLoadSuccess(tex);
+            if (tex != null) {
+                if (tex.url.indexOf(this._url) >= 0) {
+                    this.onExternalLoadSuccess(tex);
+                } else {
+                    // console.warn("GLoader __getResCompleted is Difference tex.url : " + tex.url + " - " + this._url)
+                }
+            }
             else
                 this.onExternalLoadFailed();
         }

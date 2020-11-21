@@ -1960,6 +1960,9 @@
             this._text = value;
             if (this._text == null)
                 this._text = "";
+            if (this._textField == null || this._textField.destroyed) {
+                return;
+            }
             if (this._bitmapFont == null) {
                 if (this._widthAutoSize)
                     this._textField.width = 10000;
@@ -7593,8 +7596,14 @@
             this.setErrorState();
         }
         __getResCompleted(tex) {
-            if (tex != null)
-                this.onExternalLoadSuccess(tex);
+            if (tex != null) {
+                if (tex.url.indexOf(this._url) >= 0) {
+                    this.onExternalLoadSuccess(tex);
+                }
+                else {
+                    // console.warn("GLoader __getResCompleted is Difference tex.url : " + tex.url + " - " + this._url)
+                }
+            }
             else
                 this.onExternalLoadFailed();
         }
@@ -8437,11 +8446,23 @@
             var text2 = this._text;
             if (this._templateVars)
                 text2 = this.parseTemplate(text2);
+            if (this._div == null) {
+                console.error("laya Laya.HTMLDivElement become null. please check :" + this.name);
+                return;
+            }
+            if (this.isDisposed || this.displayObject.destroyed) {
+                console.error("laya Laya.HTMLDivElement become null. please check :" + this.name);
+                return;
+            }
             try {
                 if (this._ubbEnabled)
                     this._div.innerHTML = fgui.UBBParser.inst.parse(text2);
                 else
                     this._div.innerHTML = text2;
+                if (this._div == null) {
+                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name);
+                    return;
+                }
                 if (this._widthAutoSize || this._heightAutoSize) {
                     var w, h = 0;
                     if (this._widthAutoSize) {

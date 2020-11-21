@@ -22,11 +22,25 @@ namespace fgui {
             var text2: string = this._text;
             if (this._templateVars)
                 text2 = this.parseTemplate(text2);
+            if (this._div == null) {
+                console.error("laya Laya.HTMLDivElement become null. please check :" + this.name)
+                return
+            }
+            if(this.isDisposed || this.displayObject.destroyed) {
+                console.error("laya Laya.HTMLDivElement become null. please check :" + this.name)
+                return
+            }
+
             try {
                 if (this._ubbEnabled)
                     this._div.innerHTML = UBBParser.inst.parse(text2);
                 else
                     this._div.innerHTML = text2;
+
+                if (this._div == null) {
+                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name)
+                    return
+                } 
 
                 if (this._widthAutoSize || this._heightAutoSize) {
                     var w: number, h: number = 0;
