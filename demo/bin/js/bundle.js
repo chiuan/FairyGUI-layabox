@@ -166,8 +166,7 @@
     }
 
     class GameConfig {
-        constructor() {
-        }
+        constructor() { }
         static init() {
             var reg = Laya.ClassUtils.regClass;
             reg("script/GameUI.ts", GameUI);
@@ -336,12 +335,16 @@
         }
         playText() {
             var obj = this._demoObjects["Text"];
-            obj.getChild("n12").on(Laya.Event.LINK, this, this.__clickLink);
+            let t = obj.getChild("n12").asCom.getChild("n12").asRichTextField;
+            Laya.timer.once(1000, this, () => {
+                t.text = "121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121";
+            });
+            obj.getChild("n12").asCom.getChild("n12").on(Laya.Event.LINK, this, this.__clickLink);
             obj.getChild("n25").onClick(this, this.__clickGetInput);
         }
         __clickLink(link) {
             var obj = this._demoObjects["Text"];
-            obj.getChild("n12").text = "[img]ui://9leh0eyft9fj5f[/img][color=#FF0000]你点击了链接[/color]：" + link;
+            obj.getChild("n12").asCom.getChild("n12").text = "[img]ui://9leh0eyft9fj5f[/img][color=#FF0000]你点击了链接[/color]：" + link;
         }
         __clickGetInput() {
             var obj = this._demoObjects["Text"];

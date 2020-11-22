@@ -80,7 +80,18 @@
 	        }
 	        else {
 	            this._source = null;
-	            this.clear();
+	            if (this._drawGridCmd) {
+	                if (this._one) {
+	                    if (this._one == this._drawGridCmd)
+	                        this._one = null;
+	                }
+	                let cmds = this.cmds;
+	                if (cmds && cmds.length > 0) {
+	                    if (cmds[0] == this._drawGridCmd) {
+	                        cmds.splice(0, 1);
+	                    }
+	                }
+	            }
 	        }
 	    }
 	    _setChanged() {
@@ -88,6 +99,31 @@
 	            this._isChanged = true;
 	            Laya.ILaya.timer.callLater(this, this.changeSource);
 	        }
+	    }
+	    _createDrawTexture(texture, x = 0, y = 0, width = 0, height = 0, matrix = null, alpha = 1, color = null, blendMode = null, uv) {
+	        if (!texture || alpha < 0.01)
+	            return null;
+	        if (!texture.getIsReady())
+	            return null;
+	        if (!width)
+	            width = texture.sourceWidth;
+	        if (!height)
+	            height = texture.sourceHeight;
+	        if (texture.getIsReady()) {
+	            var wRate = width / texture.sourceWidth;
+	            var hRate = height / texture.sourceHeight;
+	            width = texture.width * wRate;
+	            height = texture.height * hRate;
+	            if (width <= 0 || height <= 0)
+	                return null;
+	            x += texture.offsetX * wRate;
+	            y += texture.offsetY * hRate;
+	        }
+	        if (this._sp) {
+	            this._sp._renderType |= Laya.SpriteConst.GRAPHICS;
+	            this._sp._setRenderType(this._sp._renderType);
+	        }
+	        return Laya.DrawTextureCmd.create.call(this, texture, x, y, width, height, matrix, alpha, color, blendMode, uv);
 	    }
 	    changeSource() {
 	        this._isChanged = false;
@@ -100,14 +136,12 @@
 	        var sw = source.sourceWidth;
 	        var sh = source.sourceHeight;
 	        if (!sizeGrid || (sw === width && sh === height)) {
-	            this.clear();
-	            this.drawTexture(source, this._offset ? this._offset[0] : 0, this._offset ? this._offset[1] : 0, width, height, null, 1, null, null, this.uv);
+	            let cmd = this._createDrawTexture(source, this._offset ? this._offset[0] : 0, this._offset ? this._offset[1] : 0, width, height, null, 1, null, null, this.uv);
+	            cmd && this._setDrawGridCmd(cmd);
 	        }
 	        else {
-	            this.clear();
-	            this.draw9Grid(source, 0, 0, width, height, sizeGrid);
-	            this._repaint();
-	            return;
+	            let cmd = Laya.Draw9GridTexture.create(source, 0, 0, width, height, sizeGrid);
+	            this._setDrawGridCmd(cmd);
 	        }
 	        this._repaint();
 	    }
@@ -130,6 +164,33 @@
 	            texture = Laya.Texture.createFromTexture(tex, x, y, width, height);
 	        }
 	        return texture;
+	    }
+	    _setDrawGridCmd(newcmd) {
+	        var source = this._source;
+	        if (!source || !source.bitmap) {
+	            return;
+	        }
+	        let cmds = this.cmds;
+	        if (!this._one && (!cmds || cmds.length <= 0)) {
+	            this._saveToCmd(null, newcmd);
+	        }
+	        else {
+	            let lastOne = this._one;
+	            if (lastOne) {
+	                if (lastOne == this._drawGridCmd) {
+	                    this._one = newcmd;
+	                }
+	                else {
+	                    this.clear();
+	                    this._saveToCmd(null, newcmd);
+	                    this._saveToCmd(null, lastOne);
+	                }
+	            }
+	            else {
+	                cmds.splice(0, 0, newcmd);
+	            }
+	        }
+	        this._drawGridCmd = newcmd;
 	    }
 	}
 	Laya.ClassUtils.regClass("laya.ui.AutoBitmap", AutoBitmap);
@@ -654,7 +715,7 @@
 	        this.skin = skin;
 	    }
 	    destroy(destroyChild = true) {
-	        super.destroy(true);
+	        super.destroy(destroyChild);
 	        this._bitmap && this._bitmap.destroy();
 	        this._bitmap = null;
 	    }
@@ -1577,8 +1638,8 @@
 	Laya.ClassUtils.regClass("Laya.Clip", Clip);
 
 	class ColorPicker extends UIComponent {
-	    constructor() {
-	        super(...arguments);
+	    constructor(createChildren = true) {
+	        super(false);
 	        this._gridSize = 11;
 	        this._bgColor = "#ffffff";
 	        this._borderColor = "#000000";
@@ -1586,8 +1647,14 @@
 	        this._inputBgColor = "#efefef";
 	        this._colors = [];
 	        this._selectedColor = "#000000";
+	        if (createChildren) {
+	            this.preinitialize();
+	            this.createChildren();
+	            this.initialize();
+	        }
 	    }
 	    destroy(destroyChild = true) {
+	        Laya.ILaya.stage.off(Laya.Event.MOUSE_DOWN, this, this.removeColorBox);
 	        super.destroy(destroyChild);
 	        this._colorPanel && this._colorPanel.destroy(destroyChild);
 	        this._colorButton && this._colorButton.destroy(destroyChild);
@@ -5972,7 +6039,10 @@
 	        Laya.Laya.timer.clear(this, this._onLoop);
 	    }
 	    _onLoop() {
-	        this.texture.bitmap.loadImageSource(window.sharedCanvas);
+	        let _canvas = window.sharedCanvas;
+	        this.texture.sourceWidth = _canvas.width;
+	        this.texture.sourceHeight = _canvas.height;
+	        this.texture.bitmap.loadImageSource(_canvas);
 	    }
 	    set width(value) {
 	        super.width = value;
