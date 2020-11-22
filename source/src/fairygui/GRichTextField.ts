@@ -32,6 +32,7 @@ namespace fgui {
             }
 
             try {
+                this._div.size(this._width, this._height);
                 if (this._ubbEnabled)
                     this._div.innerHTML = UBBParser.inst.parse(text2);
                 else
