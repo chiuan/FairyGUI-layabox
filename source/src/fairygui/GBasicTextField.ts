@@ -152,7 +152,11 @@ namespace fgui {
         }
 
         public set bold(value: boolean) {
-            this._textField.bold = value;
+            if(UIConfig.defulatFontBold) {
+                this._textField.bold = value;
+            } else {
+                this._textField.bold = false;
+            }
         }
 
         public get italic(): boolean {
@@ -160,7 +164,11 @@ namespace fgui {
         }
 
         public set italic(value: boolean) {
-            this._textField.italic = value;
+            if(UIConfig.defaultFontItalic) {
+                this._textField.italic = value;
+            } else {
+                this._textField.italic = false;
+            }
         }
 
         public get underline(): boolean {

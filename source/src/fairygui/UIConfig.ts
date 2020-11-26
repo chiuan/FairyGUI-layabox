@@ -5,6 +5,8 @@ namespace fgui {
 
     //Default font name
     public static defaultFont: string = "SimSun";
+    public static defulatFontBold:string = "bold";
+    public static defaultFontItalic:string = "italic";
 
     //Resource using in Window.ShowModalWait for locking the window.
     public static windowModalWaiting: string;

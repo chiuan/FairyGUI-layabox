@@ -2050,13 +2050,23 @@
             return this._textField.bold;
         }
         set bold(value) {
-            this._textField.bold = value;
+            if (fgui.UIConfig.defulatFontBold) {
+                this._textField.bold = value;
+            }
+            else {
+                this._textField.bold = false;
+            }
         }
         get italic() {
             return this._textField.italic;
         }
         set italic(value) {
-            this._textField.italic = value;
+            if (fgui.UIConfig.defaultFontItalic) {
+                this._textField.italic = value;
+            }
+            else {
+                this._textField.italic = false;
+            }
         }
         get underline() {
             return this._textField.underline;
@@ -8455,13 +8465,17 @@
                 return;
             }
             try {
+                if (this._div == null || this._div.destroyed) {
+                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name);
+                    return;
+                }
                 this._div.size(this._width, this._height);
                 if (this._ubbEnabled)
                     this._div.innerHTML = fgui.UBBParser.inst.parse(text2);
                 else
                     this._div.innerHTML = text2;
-                if (this._div == null) {
-                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name);
+                if (this._div == null || this._div.destroyed) {
+                    console.error("laya Laya.HTMLDivElement become null. please check after set html :" + this.name);
                     return;
                 }
                 if (this._widthAutoSize || this._heightAutoSize) {
@@ -8545,6 +8559,9 @@
             return this._div.style.bold;
         }
         set bold(value) {
+            if (!fgui.UIConfig.defulatFontBold) {
+                value = false;
+            }
             if (this._div.style.bold != value) {
                 this._div.style.bold = value;
                 this.refresh();
@@ -8554,6 +8571,9 @@
             return this._div.style.italic;
         }
         set italic(value) {
+            if (!fgui.UIConfig.defaultFontItalic) {
+                value = false;
+            }
             if (this._div.style.italic != value) {
                 this._div.style.italic = value;
                 this.refresh();
@@ -9356,12 +9376,18 @@
             return this._input.bold;
         }
         set bold(value) {
+            if (!fgui.UIConfig.defulatFontBold) {
+                value = false;
+            }
             this._input.bold = value;
         }
         get italic() {
             return this._input.italic;
         }
         set italic(value) {
+            if (!fgui.UIConfig.defaultFontItalic) {
+                value = false;
+            }
             this._input.italic = value;
         }
         get singleLine() {
@@ -13583,6 +13609,8 @@
     }
     //Default font name
     UIConfig.defaultFont = "SimSun";
+    UIConfig.defulatFontBold = "bold";
+    UIConfig.defaultFontItalic = "italic";
     //When a modal window is in front, the background becomes dark.
     UIConfig.modalLayerColor = "rgba(33,33,33,0.2)";
     UIConfig.buttonSoundVolumeScale = 1;

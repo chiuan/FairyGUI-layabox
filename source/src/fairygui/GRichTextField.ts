@@ -32,14 +32,19 @@ namespace fgui {
             }
 
             try {
+                if (this._div == null || this._div.destroyed) {
+                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name)
+                    return
+                }
+
                 this._div.size(this._width, this._height);
                 if (this._ubbEnabled)
                     this._div.innerHTML = UBBParser.inst.parse(text2);
                 else
                     this._div.innerHTML = text2;
 
-                if (this._div == null) {
-                    console.error("laya Laya.HTMLDivElement become null. please check :" + this.name)
+                if (this._div == null || this._div.destroyed) {
+                    console.error("laya Laya.HTMLDivElement become null. please check after set html :" + this.name)
                     return
                 } 
 
@@ -141,6 +146,9 @@ namespace fgui {
         }
 
         public set bold(value: boolean) {
+            if(!UIConfig.defulatFontBold) {
+                value = false 
+            }
             if (this._div.style.bold != value) {
                 this._div.style.bold = value;
                 this.refresh();
@@ -152,6 +160,9 @@ namespace fgui {
         }
 
         public set italic(value: boolean) {
+            if(!UIConfig.defaultFontItalic) {
+                value = false 
+            }
             if (this._div.style.italic != value) {
                 this._div.style.italic = value;
                 this.refresh();

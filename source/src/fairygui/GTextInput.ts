@@ -81,6 +81,9 @@ namespace fgui {
         }
 
         public set bold(value: boolean) {
+            if(!UIConfig.defulatFontBold) {
+                value = false 
+            } 
             this._input.bold = value;
         }
 
@@ -89,6 +92,9 @@ namespace fgui {
         }
 
         public set italic(value: boolean) {
+            if(!UIConfig.defaultFontItalic) {
+                value = false 
+            }
             this._input.italic = value;
         }
 

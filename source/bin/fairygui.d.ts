@@ -1752,6 +1752,8 @@ declare namespace fgui {
     class UIConfig {
         constructor();
         static defaultFont: string;
+        static defulatFontBold: string;
+        static defaultFontItalic: string;
         static windowModalWaiting: string;
         static globalModalWaiting: string;
         static modalLayerColor: string;
