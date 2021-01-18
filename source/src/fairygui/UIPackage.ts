@@ -142,7 +142,7 @@ namespace fgui {
                             if (!UIPackage._instById[pkg.id]) {
                                 UIPackage._instById[pkg.id] = pkg;
                                 UIPackage._instByName[pkg.name] = pkg;
-                                UIPackage._instByName[pkg._resKey] = pkg;
+                                UIPackage._instById[pkg._resKey] = pkg;
                             }
                         }
                         completeHandler.runWith([pkgArr]);
@@ -154,7 +154,7 @@ namespace fgui {
                         if (!UIPackage._instById[pkg.id]) {
                             UIPackage._instById[pkg.id] = pkg;
                             UIPackage._instByName[pkg.name] = pkg;
-                            UIPackage._instByName[pkg._resKey] = pkg;
+                            UIPackage._instById[pkg._resKey] = pkg;
                         }
                     }
                     completeHandler.runWith([pkgArr]);
@@ -595,11 +595,13 @@ namespace fgui {
                         var sprite: AtlasSprite = this._sprites[item.id];
                         if (sprite) {
                             var atlasTexture: Laya.Texture = <Laya.Texture>(this.getItemAsset(sprite.atlas));
-                            if(atlasTexture) {
+                            if (atlasTexture) {
                                 item.texture = Laya.Texture.create(atlasTexture,
                                     sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height,
                                     sprite.offset.x, sprite.offset.y,
                                     sprite.originalSize.x, sprite.originalSize.y);
+                            } else {
+                                item.texture = null;
                             }
                         }
                         else

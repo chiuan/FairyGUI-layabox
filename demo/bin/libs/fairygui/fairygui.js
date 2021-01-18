@@ -11011,7 +11011,7 @@
                 ScrollPane.draggingPane = null;
             }
             if (this._tweening != 0)
-                Laya.timer.clear(this, this.tweenUpdate);
+                Laya.systemTimer.clear(this, this.tweenUpdate);
             this._pageController = null;
             if (this._hzScrollBar)
                 this._hzScrollBar.dispose();
@@ -11591,14 +11591,14 @@
             else if (this._aniFlag == 1 && !ani)
                 this._aniFlag = -1;
             this._needRefresh = true;
-            Laya.timer.callLater(this, this.refresh);
+            Laya.systemTimer.callLater(this, this.refresh);
         }
         refresh() {
             if (!this._owner.displayObject) {
                 return;
             }
             this._needRefresh = false;
-            Laya.timer.clear(this, this.refresh);
+            Laya.systemTimer.clear(this, this.refresh);
             if (this._pageMode || this._snapToItem) {
                 sEndPos.setTo(-this._xPos, -this._yPos);
                 this.alignPosition(sEndPos, false);
@@ -11610,7 +11610,7 @@
             if (this._needRefresh) //在onScroll事件里开发者可能修改位置，这里再刷新一次，避免闪烁
              {
                 this._needRefresh = false;
-                Laya.timer.clear(this, this.refresh);
+                Laya.systemTimer.clear(this, this.refresh);
                 this.refresh2();
             }
             this.updateScrollBarPos();
@@ -11669,7 +11669,7 @@
             this._isHoldAreaDone = false;
             this._velocity.setTo(0, 0);
             this._velocityScale = 1;
-            this._lastMoveTime = Laya.timer.currTimer / 1000;
+            this._lastMoveTime = Laya.systemTimer.currTimer / 1000;
             this._owner.displayObject.stage.on(Laya.Event.MOUSE_MOVE, this, this.__mouseMove);
             this._owner.displayObject.stage.on(Laya.Event.MOUSE_UP, this, this.__mouseUp);
             this._owner.displayObject.stage.on(Laya.Event.CLICK, this, this.__click);
@@ -11769,7 +11769,7 @@
             }
             //更新速度
             var frameRate = Laya.stage.frameRate == Laya.Stage.FRAME_SLOW ? 30 : 60;
-            var now = Laya.timer.currTimer / 1000;
+            var now = Laya.systemTimer.currTimer / 1000;
             var deltaTime = Math.max(now - this._lastMoveTime, 1 / frameRate);
             var deltaPositionX = pt.x - this._lastTouchPos.x;
             var deltaPositionY = pt.y - this._lastTouchPos.y;
@@ -11781,12 +11781,12 @@
                 var elapsed = deltaTime * frameRate - 1;
                 if (elapsed > 1) //速度衰减
                  {
-                    var factor = Math.pow(0.833, elapsed);
+                    var factor = Math.pow(0.833, elapsed * 0.5);
                     this._velocity.x = this._velocity.x * factor;
                     this._velocity.y = this._velocity.y * factor;
                 }
-                this._velocity.x = fgui.ToolSet.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 10);
-                this._velocity.y = fgui.ToolSet.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 10);
+                this._velocity.x = fgui.ToolSet.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 40);
+                this._velocity.y = fgui.ToolSet.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 40);
             }
             /*速度计算使用的是本地位移，但在后续的惯性滚动判断中需要用到屏幕位移，所以这里要记录一个位移的比例。
             */
@@ -11891,9 +11891,9 @@
                 //更新速度
                 if (!this._inertiaDisabled) {
                     var frameRate = Laya.stage.frameRate == Laya.Stage.FRAME_SLOW ? 30 : 60;
-                    var elapsed = (Laya.timer.currTimer / 1000 - this._lastMoveTime) * frameRate - 1;
+                    var elapsed = (Laya.systemTimer.currTimer / 1000 - this._lastMoveTime) * frameRate - 1;
                     if (elapsed > 1) {
-                        var factor = Math.pow(0.833, elapsed);
+                        var factor = Math.pow(0.833, elapsed * 0.5);
                         this._velocity.x = this._velocity.x * factor;
                         this._velocity.y = this._velocity.y * factor;
                     }
@@ -12192,7 +12192,7 @@
         startTween(type) {
             this._tweenTime.setTo(0, 0);
             this._tweening = type;
-            Laya.timer.frameLoop(1, this, this.tweenUpdate);
+            Laya.systemTimer.frameLoop(1, this, this.tweenUpdate);
             this.updateScrollBarVisible();
         }
         killTween() {
@@ -12202,7 +12202,7 @@
                 fgui.Events.dispatch(fgui.Events.SCROLL, this._owner.displayObject);
             }
             this._tweening = 0;
-            Laya.timer.clear(this, this.tweenUpdate);
+            Laya.systemTimer.clear(this, this.tweenUpdate);
             this.updateScrollBarVisible();
             fgui.Events.dispatch(fgui.Events.SCROLL_END, this._owner.displayObject);
         }
@@ -12263,7 +12263,7 @@
             }
             if (this._tweenChange.x == 0 && this._tweenChange.y == 0) {
                 this._tweening = 0;
-                Laya.timer.clear(this, this.tweenUpdate);
+                Laya.systemTimer.clear(this, this.tweenUpdate);
                 this.loopCheckingCurrent();
                 this.updateScrollBarPos();
                 this.updateScrollBarVisible();
@@ -12278,7 +12278,7 @@
         runTween(axis) {
             var newValue;
             if (this._tweenChange[axis] != 0) {
-                this._tweenTime[axis] += Laya.timer.delta / 1000;
+                this._tweenTime[axis] += Laya.systemTimer.delta / 1000;
                 if (this._tweenTime[axis] >= this._tweenDuration[axis]) {
                     newValue = this._tweenStart[axis] + this._tweenChange[axis];
                     this._tweenChange[axis] = 0;
@@ -15388,7 +15388,7 @@
         update() {
             if (!this._playing || this._frameCount == 0 || this._status == 3)
                 return;
-            var dt = Laya.timer.delta;
+            var dt = Laya.systemTimer.delta;
             if (dt > 100)
                 dt = 100;
             if (this.timeScale != 1)
@@ -15472,16 +15472,16 @@
         }
         checkTimer() {
             if (this._playing && this._frameCount > 0 && this.stage != null)
-                Laya.timer.frameLoop(1, this, this.update);
+                Laya.systemTimer.frameLoop(1, this, this.update);
             else
-                Laya.timer.clear(this, this.update);
+                Laya.systemTimer.clear(this, this.update);
         }
         __addToStage() {
             if (this._playing && this._frameCount > 0)
-                Laya.timer.frameLoop(1, this, this.update);
+                Laya.systemTimer.frameLoop(1, this, this.update);
         }
         __removeFromStage() {
-            Laya.timer.clear(this, this.update);
+            Laya.systemTimer.clear(this, this.update);
         }
     }
     fgui.MovieClip = MovieClip;
@@ -16713,26 +16713,26 @@
 
 (function (fgui) {
     class GTween {
-        static to(start, end, duration) {
-            return fgui.TweenManager.createTween()._to(start, end, duration);
+        static to(start, end, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._to(start, end, duration);
         }
-        static to2(start, start2, end, end2, duration) {
-            return fgui.TweenManager.createTween()._to2(start, start2, end, end2, duration);
+        static to2(start, start2, end, end2, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._to2(start, start2, end, end2, duration);
         }
-        static to3(start, start2, start3, end, end2, end3, duration) {
-            return fgui.TweenManager.createTween()._to3(start, start2, start3, end, end2, end3, duration);
+        static to3(start, start2, start3, end, end2, end3, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._to3(start, start2, start3, end, end2, end3, duration);
         }
-        static to4(start, start2, start3, start4, end, end2, end3, end4, duration) {
-            return fgui.TweenManager.createTween()._to4(start, start2, start3, start4, end, end2, end3, end4, duration);
+        static to4(start, start2, start3, start4, end, end2, end3, end4, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._to4(start, start2, start3, start4, end, end2, end3, end4, duration);
         }
-        static toColor(start, end, duration) {
-            return fgui.TweenManager.createTween()._toColor(start, end, duration);
+        static toColor(start, end, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._toColor(start, end, duration);
         }
-        static delayedCall(delay) {
-            return fgui.TweenManager.createTween().setDelay(delay);
+        static delayedCall(delay, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer).setDelay(delay);
         }
-        static shake(startX, startY, amplitude, duration) {
-            return fgui.TweenManager.createTween()._shake(startX, startY, amplitude, duration);
+        static shake(startX, startY, amplitude, duration, onTimer = false) {
+            return fgui.TweenManager.createTween(onTimer)._shake(startX, startY, amplitude, duration);
         }
         static isTweening(target, propType) {
             return fgui.TweenManager.isTweening(target, propType);
@@ -17160,9 +17160,10 @@
 
 (function (fgui) {
     class TweenManager {
-        static createTween() {
+        static createTween(isOnTimer = false) {
             if (!_inited) {
-                Laya.timer.frameLoop(1, null, TweenManager.update);
+                Laya.systemTimer.frameLoop(1, this, TweenManager.update);
+                Laya.timer.frameLoop(1, this, TweenManager.update_timer);
                 _inited = true;
             }
             var tweener;
@@ -17173,7 +17174,12 @@
             else
                 tweener = new fgui.GTweener();
             tweener._init();
-            _activeTweens[_totalActiveTweens++] = tweener;
+            if (isOnTimer) {
+                _activeTweens_timer[_totalActiveTweens_timer++] = tweener;
+            }
+            else {
+                _activeTweens[_totalActiveTweens++] = tweener;
+            }
             return tweener;
         }
         static isTweening(target, propType) {
@@ -17186,16 +17192,31 @@
                     && (anyType || tweener._propType == propType))
                     return true;
             }
+            for (var i = 0; i < _totalActiveTweens_timer; i++) {
+                var tweener = _activeTweens_timer[i];
+                if (tweener && tweener.target == target && !tweener._killed
+                    && (anyType || tweener._propType == propType))
+                    return true;
+            }
             return false;
         }
         static killTweens(target, completed, propType) {
             if (target == null)
                 return false;
             var flag = false;
-            var cnt = _totalActiveTweens;
             var anyType = !propType;
+            var cnt = _totalActiveTweens;
             for (var i = 0; i < cnt; i++) {
                 var tweener = _activeTweens[i];
+                if (tweener && tweener.target == target && !tweener._killed
+                    && (anyType || tweener._propType == propType)) {
+                    tweener.kill(completed);
+                    flag = true;
+                }
+            }
+            var cnt = _totalActiveTweens_timer;
+            for (var i = 0; i < cnt; i++) {
+                var tweener = _activeTweens_timer[i];
                 if (tweener && tweener.target == target && !tweener._killed
                     && (anyType || tweener._propType == propType)) {
                     tweener.kill(completed);
@@ -17207,8 +17228,8 @@
         static getTween(target, propType) {
             if (target == null)
                 return null;
-            var cnt = _totalActiveTweens;
             var anyType = !propType;
+            var cnt = _totalActiveTweens;
             for (var i = 0; i < cnt; i++) {
                 var tweener = _activeTweens[i];
                 if (tweener && tweener.target == target && !tweener._killed
@@ -17216,10 +17237,58 @@
                     return tweener;
                 }
             }
+            var cnt = _totalActiveTweens_timer;
+            for (var i = 0; i < cnt; i++) {
+                var tweener = _activeTweens_timer[i];
+                if (tweener && tweener.target == target && !tweener._killed
+                    && (anyType || tweener._propType == propType)) {
+                    return tweener;
+                }
+            }
             return null;
         }
-        static update() {
+        static update_timer() {
             var dt = Laya.timer.delta / 1000;
+            var cnt = _totalActiveTweens_timer;
+            var freePosStart = -1;
+            for (var i = 0; i < cnt; i++) {
+                var tweener = _activeTweens_timer[i];
+                if (tweener == null) {
+                    if (freePosStart == -1)
+                        freePosStart = i;
+                }
+                else if (tweener._killed) {
+                    tweener._reset();
+                    _tweenerPool.push(tweener);
+                    _activeTweens_timer[i] = null;
+                    if (freePosStart == -1)
+                        freePosStart = i;
+                }
+                else {
+                    if ((tweener._target instanceof fgui.GObject) && tweener._target.isDisposed)
+                        tweener._killed = true;
+                    else if (!tweener._paused)
+                        tweener._update(dt);
+                    if (freePosStart != -1) {
+                        _activeTweens_timer[freePosStart] = tweener;
+                        _activeTweens_timer[i] = null;
+                        freePosStart++;
+                    }
+                }
+            }
+            if (freePosStart >= 0) {
+                if (_totalActiveTweens_timer != cnt) //new tweens added
+                 {
+                    var j = cnt;
+                    cnt = _totalActiveTweens_timer - cnt;
+                    for (i = 0; i < cnt; i++)
+                        _activeTweens_timer[freePosStart++] = _activeTweens_timer[j++];
+                }
+                _totalActiveTweens_timer = freePosStart;
+            }
+        }
+        static update() {
+            var dt = Laya.systemTimer.delta / 1000;
             var cnt = _totalActiveTweens;
             var freePosStart = -1;
             for (var i = 0; i < cnt; i++) {
@@ -17261,8 +17330,10 @@
     }
     fgui.TweenManager = TweenManager;
     var _activeTweens = [];
+    var _activeTweens_timer = []; // 在timer更新的tween
     var _tweenerPool = [];
     var _totalActiveTweens = 0;
+    var _totalActiveTweens_timer = 0; // 在timer下激活的tween数量
     var _inited = false;
 })(fgui);
 
