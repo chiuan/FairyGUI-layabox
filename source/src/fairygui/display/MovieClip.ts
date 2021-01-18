@@ -193,7 +193,7 @@ namespace fgui {
             if (!this._playing || this._frameCount == 0 || this._status == 3)
                 return;
 
-            var dt: number = Laya.timer.delta;
+            var dt: number = Laya.systemTimer.delta;
             if (dt > 100)
                 dt = 100;
             if (this.timeScale != 1)
@@ -285,18 +285,18 @@ namespace fgui {
 
         private checkTimer(): void {
             if (this._playing && this._frameCount > 0 && this.stage != null)
-                Laya.timer.frameLoop(1, this, this.update);
+                Laya.systemTimer.frameLoop(1, this, this.update);
             else
-                Laya.timer.clear(this, this.update);
+                Laya.systemTimer.clear(this, this.update);
         }
 
         private __addToStage(): void {
             if (this._playing && this._frameCount > 0)
-                Laya.timer.frameLoop(1, this, this.update);
+                Laya.systemTimer.frameLoop(1, this, this.update);
         }
 
         private __removeFromStage(): void {
-            Laya.timer.clear(this, this.update);
+            Laya.systemTimer.clear(this, this.update);
         }
     }
 }

@@ -202,7 +202,7 @@ namespace fgui {
                 ScrollPane.draggingPane = null;
             }
             if (this._tweening != 0)
-                Laya.timer.clear(this, this.tweenUpdate);
+                Laya.systemTimer.clear(this, this.tweenUpdate);
 
             this._pageController = null;
 
@@ -902,7 +902,7 @@ namespace fgui {
                 this._aniFlag = -1;
 
             this._needRefresh = true;
-            Laya.timer.callLater(this, this.refresh);
+            Laya.systemTimer.callLater(this, this.refresh);
         }
 
         private refresh(): void {
@@ -910,7 +910,7 @@ namespace fgui {
                 return;
             }
             this._needRefresh = false;
-            Laya.timer.clear(this, this.refresh);
+            Laya.systemTimer.clear(this, this.refresh);
 
             if (this._pageMode || this._snapToItem) {
                 sEndPos.setTo(-this._xPos, -this._yPos);
@@ -925,7 +925,7 @@ namespace fgui {
             if (this._needRefresh) //在onScroll事件里开发者可能修改位置，这里再刷新一次，避免闪烁
             {
                 this._needRefresh = false;
-                Laya.timer.clear(this, this.refresh);
+                Laya.systemTimer.clear(this, this.refresh);
 
                 this.refresh2();
             }
@@ -996,7 +996,7 @@ namespace fgui {
             this._isHoldAreaDone = false;
             this._velocity.setTo(0, 0);
             this._velocityScale = 1;
-            this._lastMoveTime = Laya.timer.currTimer / 1000;
+            this._lastMoveTime = Laya.systemTimer.currTimer / 1000;
 
             this._owner.displayObject.stage.on(Laya.Event.MOUSE_MOVE, this, this.__mouseMove);
             this._owner.displayObject.stage.on(Laya.Event.MOUSE_UP, this, this.__mouseUp);
@@ -1116,7 +1116,7 @@ namespace fgui {
 
             //更新速度
             var frameRate: number = Laya.stage.frameRate == Laya.Stage.FRAME_SLOW ? 30 : 60;
-            var now: number = Laya.timer.currTimer / 1000;
+            var now: number = Laya.systemTimer.currTimer / 1000;
             var deltaTime: number = Math.max(now - this._lastMoveTime, 1 / frameRate);
             var deltaPositionX: number = pt.x - this._lastTouchPos.x;
             var deltaPositionY: number = pt.y - this._lastTouchPos.y;
@@ -1128,12 +1128,12 @@ namespace fgui {
                 var elapsed: number = deltaTime * frameRate - 1;
                 if (elapsed > 1) //速度衰减
                 {
-                    var factor: number = Math.pow(0.833, elapsed);
+                    var factor: number = Math.pow(0.833, elapsed * 0.5);
                     this._velocity.x = this._velocity.x * factor;
                     this._velocity.y = this._velocity.y * factor;
                 }
-                this._velocity.x = ToolSet.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 10);
-                this._velocity.y = ToolSet.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 10);
+                this._velocity.x = ToolSet.lerp(this._velocity.x, deltaPositionX * 60 / frameRate / deltaTime, deltaTime * 40);
+                this._velocity.y = ToolSet.lerp(this._velocity.y, deltaPositionY * 60 / frameRate / deltaTime, deltaTime * 40);
             }
 
             /*速度计算使用的是本地位移，但在后续的惯性滚动判断中需要用到屏幕位移，所以这里要记录一个位移的比例。
@@ -1255,9 +1255,9 @@ namespace fgui {
                 //更新速度
                 if (!this._inertiaDisabled) {
                     var frameRate: number = Laya.stage.frameRate == Laya.Stage.FRAME_SLOW ? 30 : 60;
-                    var elapsed: number = (Laya.timer.currTimer / 1000 - this._lastMoveTime) * frameRate - 1;
+                    var elapsed: number = (Laya.systemTimer.currTimer / 1000 - this._lastMoveTime) * frameRate - 1;
                     if (elapsed > 1) {
-                        var factor: number = Math.pow(0.833, elapsed);
+                        var factor: number = Math.pow(0.833, elapsed * 0.5);
                         this._velocity.x = this._velocity.x * factor;
                         this._velocity.y = this._velocity.y * factor;
                     }
@@ -1601,7 +1601,7 @@ namespace fgui {
         private startTween(type: number): void {
             this._tweenTime.setTo(0, 0);
             this._tweening = type;
-            Laya.timer.frameLoop(1, this, this.tweenUpdate);
+            Laya.systemTimer.frameLoop(1, this, this.tweenUpdate);
 
             this.updateScrollBarVisible();
         }
@@ -1614,7 +1614,7 @@ namespace fgui {
             }
 
             this._tweening = 0;
-            Laya.timer.clear(this, this.tweenUpdate);
+            Laya.systemTimer.clear(this, this.tweenUpdate);
 
             this.updateScrollBarVisible();
 
@@ -1688,7 +1688,7 @@ namespace fgui {
 
             if (this._tweenChange.x == 0 && this._tweenChange.y == 0) {
                 this._tweening = 0;
-                Laya.timer.clear(this, this.tweenUpdate);
+                Laya.systemTimer.clear(this, this.tweenUpdate);
 
                 this.loopCheckingCurrent();
                 this.updateScrollBarPos();
@@ -1707,7 +1707,7 @@ namespace fgui {
         private runTween(axis: string): number {
             var newValue: number;
             if (this._tweenChange[axis] != 0) {
-                this._tweenTime[axis] += Laya.timer.delta / 1000;
+                this._tweenTime[axis] += Laya.systemTimer.delta / 1000;
                 if (this._tweenTime[axis] >= this._tweenDuration[axis]) {
                     newValue = this._tweenStart[axis] + this._tweenChange[axis];
                     this._tweenChange[axis] = 0;
