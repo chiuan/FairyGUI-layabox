@@ -291,6 +291,7 @@
                 obj = fgui.UIPackage.createObject("Basics", "Demo_" + type).asCom;
                 this._demoObjects[type] = obj;
             }
+            console.log("run :" + type);
             this._demoContainer.removeChildren();
             this._demoContainer.addChild(obj);
             this._cc.selectedIndex = 1;
@@ -335,16 +336,15 @@
         }
         playText() {
             var obj = this._demoObjects["Text"];
-            let t = obj.getChild("n12").asCom.getChild("n12").asRichTextField;
-            Laya.timer.once(1000, this, () => {
-                t.text = "121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121121212121211212121212112121212121";
-            });
-            obj.getChild("n12").asCom.getChild("n12").on(Laya.Event.LINK, this, this.__clickLink);
+            obj.getChild("n12").on(Laya.Event.LINK, this, this.__clickLink);
             obj.getChild("n25").onClick(this, this.__clickGetInput);
+            let tx = obj.getChild("n28").asRichTextField;
+            console.log("富文本内容=" + tx.text);
+            console.log("富文本innerHTML=" + tx.div.innerHTML);
         }
         __clickLink(link) {
             var obj = this._demoObjects["Text"];
-            obj.getChild("n12").asCom.getChild("n12").text = "[img]ui://9leh0eyft9fj5f[/img][color=#FF0000]你点击了链接[/color]：" + link;
+            obj.getChild("n12").text = "[img]ui://9leh0eyft9fj5f[/img][color=#FF0000]你点击了链接[/color]：" + link;
         }
         __clickGetInput() {
             var obj = this._demoObjects["Text"];

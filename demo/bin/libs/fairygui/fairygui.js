@@ -8495,6 +8495,24 @@
                     this.setSize(w, h);
                     this._updatingSize = false;
                 }
+                if (this._div) {
+                    var top_padding = 0;
+                    switch (this.valign) {
+                        case "middle":
+                            top_padding = (this.height - this.div.contextHeight) / 2;
+                            break;
+                    }
+                    var left_padding = 0;
+                    switch (this.align) {
+                        case "center":
+                            left_padding = (this.width - this.div.contextWidth) / 2;
+                            break;
+                        case "right":
+                            left_padding = (this.width - this.div.contextWidth);
+                            break;
+                    }
+                    this.div.style.padding = [top_padding, 0, 0, left_padding];
+                }
             }
             catch (err) {
                 console.error("laya reports html error:" + err);
@@ -13853,7 +13871,7 @@
                             if (!UIPackage._instById[pkg.id]) {
                                 UIPackage._instById[pkg.id] = pkg;
                                 UIPackage._instByName[pkg.name] = pkg;
-                                UIPackage._instByName[pkg._resKey] = pkg;
+                                UIPackage._instById[pkg._resKey] = pkg;
                             }
                         }
                         completeHandler.runWith([pkgArr]);
@@ -13865,7 +13883,7 @@
                         if (!UIPackage._instById[pkg.id]) {
                             UIPackage._instById[pkg.id] = pkg;
                             UIPackage._instByName[pkg.name] = pkg;
-                            UIPackage._instByName[pkg._resKey] = pkg;
+                            UIPackage._instById[pkg._resKey] = pkg;
                         }
                     }
                     completeHandler.runWith([pkgArr]);
@@ -14236,6 +14254,9 @@
                             var atlasTexture = (this.getItemAsset(sprite.atlas));
                             if (atlasTexture) {
                                 item.texture = Laya.Texture.create(atlasTexture, sprite.rect.x, sprite.rect.y, sprite.rect.width, sprite.rect.height, sprite.offset.x, sprite.offset.y, sprite.originalSize.x, sprite.originalSize.y);
+                            }
+                            else {
+                                item.texture = null;
                             }
                         }
                         else

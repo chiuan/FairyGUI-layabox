@@ -55,6 +55,8 @@ export default class BasicDemo {
             this._demoObjects[type] = obj;
         }
 
+        console.log("run :" + type)
+
         this._demoContainer.removeChildren();
         this._demoContainer.addChild(obj);
         this._cc.selectedIndex = 1;
@@ -116,6 +118,10 @@ export default class BasicDemo {
         obj.getChild("n12").on(Laya.Event.LINK, this, this.__clickLink);
 
         obj.getChild("n25").onClick(this, this.__clickGetInput);
+
+        let tx = obj.getChild("n28").asRichTextField
+        console.log("富文本内容=" + tx.text)
+        console.log("富文本innerHTML=" + tx.div.innerHTML)
     }
 
     private __clickLink(link: string): void {
@@ -209,13 +215,13 @@ export default class BasicDemo {
         btnD.dragBounds = rect;
     }
 
-    private __onDragStart(evt:laya.events.Event):void {
+    private __onDragStart(evt: laya.events.Event): void {
         var btn: fgui.GButton = <fgui.GButton>fgui.GObject.cast(evt.currentTarget);
         btn.stopDrag();//取消对原目标的拖动，换成一个替代品
-        fgui.DragDropManager.inst.startDrag(btn,btn.icon,btn.icon);
+        fgui.DragDropManager.inst.startDrag(btn, btn.icon, btn.icon);
     }
-    
-    private __onDrop(data:any, evt:laya.events.Event):void {
+
+    private __onDrop(data: any, evt: laya.events.Event): void {
         var btn: fgui.GButton = <fgui.GButton>fgui.GObject.cast(evt.currentTarget);
         btn.icon = data;
     }
@@ -306,8 +312,7 @@ export default class BasicDemo {
         obj.on(Laya.Event.UNDISPLAY, this, this.__removeTimer);
     }
 
-    private __removeTimer():void
-    {
+    private __removeTimer(): void {
         Laya.timer.clear(this, this.__playProgress);
     }
 
