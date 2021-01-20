@@ -67,6 +67,24 @@ namespace fgui {
                     this.setSize(w, h);
                     this._updatingSize = false;
                 }
+                if (this._div) {
+                    var top_padding: number = 0
+                    switch (this.valign) {
+                        case "middle":
+                            top_padding = (this.height - this.div.contextHeight) / 2
+                            break
+                    }
+                    var left_padding: number = 0
+                    switch (this.align) {
+                        case "center":
+                            left_padding = (this.width - this.div.contextWidth) / 2
+                            break
+                        case "right":
+                            left_padding = (this.width - this.div.contextWidth)
+                            break
+                    }
+                    this.div.style.padding = [top_padding, 0, 0, left_padding]
+                }
             }
             catch (err) {
                 console.error("laya reports html error:" + err);
