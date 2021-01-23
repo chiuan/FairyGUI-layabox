@@ -67,7 +67,9 @@ namespace fgui {
                     this.setSize(w, h);
                     this._updatingSize = false;
                 }
-                if (this._div) {
+
+                // ! 暂时计算修复2.8版本及其以上富文本直接设置对齐不正确的bug
+                if (!Laya.version.startsWith("2.7") && this._div) {
                     var top_padding: number = 0
                     switch (this.valign) {
                         case "middle":

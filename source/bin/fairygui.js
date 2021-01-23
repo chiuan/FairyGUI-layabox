@@ -8495,7 +8495,7 @@
                     this.setSize(w, h);
                     this._updatingSize = false;
                 }
-                if (this._div) {
+                if (!Laya.version.startsWith("2.7") && this._div) {
                     var top_padding = 0;
                     switch (this.valign) {
                         case "middle":
